@@ -30,9 +30,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -q update && \
 WORKDIR /root
 
 # generate new ssh key
-RUN cat /dev/zero | ssh-keygen -q -N "" >/dev/null && echo "Copy to authorized_keys:" && cat .ssh/id_rsa.pub
+RUN cat /dev/zero | ssh-keygen -q -N "" >/dev/null && echo "Copy to authorized_keys on hosts to collect from (if using sshfs):" && cat .ssh/id_rsa.pub
 
-# .ssh exists now - copy in known_hosts
+# .ssh exists now - copy in known_hosts - you need to populate this (see README.md) (only necessary if using sshfs)
 COPY known_hosts .ssh/
 
 # config and script
