@@ -1,0 +1,20 @@
+# --------------------------------------------------------------------------------------------
+# This is a regular Ubuntu fstab file to be used as the fstab inside the collect container.
+# When try_collect mounts, Ubuntu will use this fstab file to perform the mount.
+# The mountpoints listed here must match those in the sources file (see sources.example)
+# --------------------------------------------------------------------------------------------
+# sshfs devices should have authorized_keys installed on the source (e.g. at
+# myuser2@1.2.3.5:~/.ssh/authorized_keys).  The string to add to the authorized_keys file
+# is generated when building the collect container.  See README.md for more details.
+#
+# sshfs devices also must be known to the collect container when trying to mount.  This is
+# accomplished by having a root@collect:~/.ssh/known_hosts file present inside the container.
+# collect's Dockerfile here copies one in when building the collect container, but you must
+# create it (see README.md).  Alternatively you can avoid this whole known_hosts thing by
+# telling ssh not to bother checking the source's identity.  Adding ,StrictHostKeyChecking=no,
+# to the list of options below will accomplish this.  This is insecure however.
+# --------------------------------------------------------------------------------------------
+# <device>                                  <mountpoint>            <type>  <options>
+# --------------------------------------------------------------------------------------------
+//1.2.3.4/Users                             /mnt/mymachine1_Users   cifs    auto,user,username=myuser1,password=mypassword1
+sshfs#myuser2@1.2.3.5:/Users/Shared/Legacy  /mnt/mymachine2_legacy  fuse    auto,allow_other,user,reconnect

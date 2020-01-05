@@ -1,0 +1,1 @@
+*/10 * * * * /bin/bash -c "/root/try_collect 2>&1 | gawk '{ print strftime(\"\%Y-\%m-\%d \%H:\%M:\%S\"), \$0; fflush(); }'" >>/logs/collect.log

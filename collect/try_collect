@@ -1,0 +1,64 @@
+#!/bin/bash
+#set -x
+
+date
+
+basedir=$(dirname $0)
+while read ip share dest
+do
+    if [[ -z ${ip} || ${ip:0:1} == \# ]]; then
+        # empty or commented line
+        continue
+    fi
+
+    touchfile=${basedir}/$(basename ${share})
+    echo "ip=${ip} share=${share} dest=${dest} touchfile=${touchfile}"
+
+    ping -c3 ${ip} >/dev/null
+    if [ "$?" == 0 ]; then
+        echo "${ip} is up"
+    else
+        echo "${ip} is down - skipping"
+        continue
+    fi
+
+    if [ ! -f ${touchfile} ]; then
+        touch -t197001010000.00 ${touchfile}
+    fi
+    if [ $(( (`date +%s` - `stat -L --format %Y ${touchfile}`) > (60*60*24) )) == 1 ]; then
+        echo "last successful backup for ${share} > 1 day ago"
+    else
+        echo "last successful backup for ${share} < 1 day ago - skipping"
+        continue
+    fi
+
+    rsync_command="rsync -av --progress ${share}/ ${dest}"
+
+    if [ "$(pgrep -f "${rsync_command}")" ]; then
+        echo "backup already running for ${share} - skipping"
+        continue
+    else
+        echo "no backup running for ${share}"
+    fi
+
+    # does the mount point exist?
+    if [ ! -d ${share} ]; then
+        echo "${share} does not exist; creating"
+        mkdir -v ${share}
+    else
+        echo "${share} exists"
+    fi
+
+    # is the directory mounted?  Test for 'is not empty'
+    if [ ! "$(ls -A ${share})" ]; then
+        echo "${share} is not mounted; mounting"
+        umount ${share}
+        mount ${share}
+    else
+        echo "${share} is mounted"
+    fi
+
+    # OK - kick it off in background
+    eval ${rsync_command} && touch ${touchfile} &
+
+done <${basedir}/sources

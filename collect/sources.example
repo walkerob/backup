@@ -1,0 +1,25 @@
+# ------------------------------------------------------------------------------
+# This is a config file listing source directories to be collected, the IP
+# address of the machine on which these source directories are hosted, and the
+# destination directory to where the they will be collected.
+# ------------------------------------------------------------------------------
+# <ip> is the of remote machine on which the source directory is hosted.  This
+# ip is used by try_collect, which will ping to see if it is alive.
+#
+# <mountpoint> is where the source directory will be mounted inside the collect
+# container.  This must match an entry in the fstab file.  try_collect (running
+# inside the collect container) will try to mount this mount point; fstab tells
+# the Ubuntu kernel running inside the container how to mount it.
+#
+# <rsync_destination> is a location inside the collect container.  Once
+# try_collect has mounted the source directory, it resumes a one-way rsync,
+# rsyncing the mountpoint (i.e. the remote source directory) to the
+# rsync_destination.  This should be a subdirectory of /backup since this
+# location is mapped into the collect container as a docker volume.  This means
+# that the files that the rsync writes here are available on the NAS for the
+# push container to push out to the cloud.
+# ------------------------------------------------------------------------------
+# <ip>      <mountpoint>            <rsync_destination>
+# ------------------------------------------------------------------------------
+1.2.3.4     /mnt/mymachine1_Users   /backup/live/Users
+1.2.3.5     /mnt/mymachine2_legacy  /backup/live/Legacy
