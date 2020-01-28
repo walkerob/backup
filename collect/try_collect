@@ -4,15 +4,15 @@
 date
 
 basedir=$(dirname $0)
-while read ip share dest
+while read ip mountpoint dest
 do
     if [[ -z ${ip} || ${ip:0:1} == \# ]]; then
         # empty or commented line
         continue
     fi
 
-    touchfile=${basedir}/$(basename ${share})
-    echo "ip=${ip} share=${share} dest=${dest} touchfile=${touchfile}"
+    touchfile=${basedir}/$(basename ${mountpoint})
+    echo "ip=${ip} mountpoint=${mountpoint} dest=${dest} touchfile=${touchfile}"
 
     ping -c3 ${ip} >/dev/null
     if [ "$?" == 0 ]; then
@@ -26,36 +26,36 @@ do
         touch -t197001010000.00 ${touchfile}
     fi
     if [ $(( (`date +%s` - `stat -L --format %Y ${touchfile}`) > (60*60*24) )) == 1 ]; then
-        echo "last successful backup for ${share} > 1 day ago"
+        echo "last successful collect for ${mountpoint} > 1 day ago"
     else
-        echo "last successful backup for ${share} < 1 day ago - skipping"
+        echo "last successful collect for ${mountpoint} < 1 day ago - skipping"
         continue
     fi
 
-    rsync_command="rsync -av --progress ${share}/ ${dest}"
+    rsync_command="rsync -av --progress ${mountpoint}/ ${dest}"
 
     if [ "$(pgrep -f "${rsync_command}")" ]; then
-        echo "backup already running for ${share} - skipping"
+        echo "collect already running for ${mountpoint} - skipping"
         continue
     else
-        echo "no backup running for ${share}"
+        echo "no collect running for ${mountpoint}"
     fi
 
     # does the mount point exist?
-    if [ ! -d ${share} ]; then
-        echo "${share} does not exist; creating"
-        mkdir -v ${share}
+    if [ ! -d ${mountpoint} ]; then
+        echo "${mountpoint} does not exist; creating"
+        mkdir -v ${mountpoint}
     else
-        echo "${share} exists"
+        echo "${mountpoint} exists"
     fi
 
     # is the directory mounted?  Test for 'is not empty'
-    if [ ! "$(ls -A ${share})" ]; then
-        echo "${share} is not mounted; mounting"
-        umount ${share}
-        mount ${share}
+    if [ ! "$(ls -A ${mountpoint})" ]; then
+        echo "${mountpoint} is not mounted; mounting"
+        umount ${mountpoint}
+        mount ${mountpoint}
     else
-        echo "${share} is mounted"
+        echo "${mountpoint} is mounted"
     fi
 
     # OK - kick it off in background
