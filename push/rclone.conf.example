@@ -1,0 +1,15 @@
+# --------------------------------------------------------------------------------------------
+# This is an rclone configuration file.  It is used by rclone to authenticate with the remote
+# cloud storage service.  The configuration section names e.g. [b2] must match the prefix
+# used in the dest path in the buckets file.  E.g. b2:/dest-bucket (see buckets.example)
+# --------------------------------------------------------------------------------------------
+# You can generate your rclone configuration file using the rclone wizard.  To do this, run
+# the push container in debug mode (see push/Dockerfile) and run rclone config inside the
+# container.  The rclone.config file will be created at ~/.config/rclone/rclone.conf.  The
+# rclone website has many examples of how to run rclone config for different cloud storage
+# services.  For example: https://rclone.org/b2/
+# --------------------------------------------------------------------------------------------
+[b2]
+type = b2
+account = 0000000000000000000000001
+key = K000000000000000000000000000000

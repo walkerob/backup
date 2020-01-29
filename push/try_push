@@ -1,0 +1,33 @@
+#!/bin/bash
+#set -x
+
+date
+
+basedir=$(dirname $0)
+while read source dest flags
+do
+    if [[ -z ${source} || ${source:0:1} == \# ]]; then
+        # empty or commented line
+        continue
+    fi
+
+    echo "source=${source} dest=${dest} flags=${flags}"
+
+    rclone_command="rclone sync --stats-log-level NOTICE ${source} ${dest} ${flags}"
+    # strip any "
+    rclone_command_for_pgrep=$(echo ${rclone_command} | sed "s/\"//g")
+
+    if [ "$(pgrep -f "${rclone_command_for_pgrep}")" ]; then
+        echo "push already running for ${source} - skipping"
+        continue
+    else
+        echo "no push running for ${source}"
+    fi
+
+    # OK - kick it off in background
+    eval ${rclone_command} &
+
+    # to avoid the rclone stats printing over each other
+    sleep 2
+
+done <${basedir}/buckets

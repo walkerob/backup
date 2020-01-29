@@ -1,0 +1,1 @@
+30 23 * * * /bin/bash -c "/root/try_push 2>&1 | gawk '{ print strftime(\"\%Y-\%m-\%d \%H:\%M:\%S\"), \$0; fflush(); }'" >>/logs/push.log

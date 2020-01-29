@@ -1,0 +1,28 @@
+# ------------------------------------------------------------------------------
+# This is a config file listing source directories to be pushed (to the cloud),
+# rclone path to push to, and any flags to be passed to rclone to use during the
+# push.
+# ------------------------------------------------------------------------------
+# <source> is a location inside the push container.  This will typically be the
+# "rsync_destination" from the sources file of the collect container.  try_push
+# will invoke rclone to sync from this source to the <dest> in the cloud.
+# <source> should be a subdirectory of /backup since this location is mapped
+# into the push container as a docker volume.  This means that the files that
+# try_push pushes to the cloud are on the NAS, typically files written
+# previously by the collect container.
+#
+# <dest> is an rclone destination.  Any prefixes here e.g. b2:/ must be defined
+# in the rclone.conf file.  try_push will invoke rclone sync to push the
+# files in the <source> to this location.
+#
+# <rclone_flags> can be used to invoke rclone with particular command-line
+# flags.  In the example provided here, --fast-list is provided which is an
+# rclone optimization typically used with Blackblaze; --bwlimit is used to
+# limit bandwidth during the day.  Any rclone flags can be used here.
+# Full details of supported rclone flags can be found in the rclone
+# documentation at https://rclone.org/docs/
+# ------------------------------------------------------------------------------
+# <source>          <dest>              <rclone_flags>
+# ------------------------------------------------------------------------------
+/backup/live/Users  b2:/backup-Users    --fast-list --bwlimit "06:30,20 23:59,off"
+/backup/live/Legacy b2:/backup-Legacy   --fast-list --bwlimit "06:30,80 23:59,off"
