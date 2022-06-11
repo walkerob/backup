@@ -29,7 +29,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -q update && \
 WORKDIR /root
 
 # Download and install rclone
-RUN tmp=$(mktemp) && curl https://downloads.rclone.org/v1.50.2/rclone-v1.50.2-linux-amd64.deb >${tmp} && dpkg -i ${tmp} ; rm -v ${tmp}
+RUN tmp=$(mktemp) && curl https://downloads.rclone.org/v1.58.1/rclone-v1.58.1-linux-amd64.deb >${tmp} && dpkg -i ${tmp} ; rm -v ${tmp}
 
 # config and script
 COPY buckets try_push ./
